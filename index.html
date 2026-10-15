@@ -371,6 +371,7 @@ h2{font-weight:400;font-size:21px;margin:0 0 10px}
     <div class="topbar"><button class="back" data-go="home">← 숲으로</button><span class="tt">꾸미기</span><span class="pg"></span></div>
     <div class="preview" id="cPrev"></div>
     <div class="lv" style="margin:0 auto 14px"><b id="cLv"></b><div class="xpbar"><i id="cXp"></i></div></div>
+    <p class="muted" style="text-align:center;margin:-6px 0 12px">옷은 동물 친구마다 따로 입어요. 동물을 바꾸면 그 친구의 옷이 나와요.</p>
     <div class="chips" id="cTabs"></div>
     <div class="grid" id="cGrid"></div>
   </section>
@@ -468,11 +469,14 @@ var AN={
  fox:{name:'여우',c:{body:'#F59342',belly:'#FFF4E4',dark:'#6B3A16',inner:'#FFE2C2',nose:'#3B2414'}},
  raccoon:{name:'너구리',c:{body:'#A3ACB6',belly:'#EEF1F4',dark:'#3F454D',inner:'#D9DEE3',nose:'#2E3238',mask:'#525962'}},
  deer:{name:'사슴',c:{body:'#D29A61',belly:'#FFF1DC',dark:'#6A4321',inner:'#F6C9A0',nose:'#3B2414'}},
- owl:{name:'부엉이',c:{body:'#A47B55',belly:'#F3DFC2',dark:'#5B3D24',inner:'#8C6644',nose:'#F4A62A'}}
+ owl:{name:'부엉이',c:{body:'#A47B55',belly:'#F3DFC2',dark:'#5B3D24',inner:'#8C6644',nose:'#F4A62A'}},
+ koala:{name:'코알라',c:{body:'#A9B1BA',belly:'#E9ECEF',dark:'#454B53',inner:'#F4E6EA',nose:'#3A3F46'}},
+ panda:{name:'판다',c:{body:'#FFFFFF',belly:'#FFFFFF',dark:'#2E2E2E',inner:'#3A3A3A',nose:'#2E2E2E',limb:'#333333'}},
+ puppy:{name:'강아지',c:{body:'#F2C48D',belly:'#FFF6E8',dark:'#6B4423',inner:'#C98B52',nose:'#3B2414'}}
 };
 var STAGES=['아기','꼬마','어린이','멋쟁이','숲의 영웅'], LV=[0,60,180,400,800];
 var ITEMS={
- animal:[['rabbit','토끼'],['bear','곰'],['fox','여우'],['raccoon','너구리'],['deer','사슴'],['owl','부엉이']],
+ animal:[['rabbit','토끼'],['bear','곰'],['fox','여우'],['puppy','강아지'],['panda','판다'],['koala','코알라'],['raccoon','너구리'],['deer','사슴'],['owl','부엉이']],
  hat:[['none','없음'],['leaf','나뭇잎 모자'],['flower','꽃 화관'],['acorn','도토리 모자'],['party','고깔모자'],['crown','왕관'],['wizard','마법사 모자']],
  face:[['none','없음'],['glasses','동그란 안경'],['sun','선글라스'],['star','별 안경']],
  neck:[['none','없음'],['bow','나비넥타이'],['medal','메달'],['scarf','목도리'],['ribbon','리본']],
@@ -484,11 +488,14 @@ function itemName(slot,id){var f=(ITEMS[slot]||[]).find(function(x){return x[0]=
 var ACH=[
  {id:'first',ico:'👣',name:'첫 걸음',desc:'카드 1장 공부하기',key:'cards',goal:1,gift:['hat','leaf']},
  {id:'quiz1',ico:'🎯',name:'첫 도전',desc:'문제 풀기 1판 끝내기',key:'quizzes',goal:1,gift:['face','glasses']},
+ {id:'cards50',ico:'🐶',name:'단어 친구',desc:'카드 50장 공부하기',key:'cards',goal:50,gift:['animal','puppy']},
  {id:'ear',ico:'👂',name:'귀 쫑긋',desc:'소리 30번 듣기',key:'listens',goal:30,gift:['neck','bow']},
  {id:'streak3',ico:'🔥',name:'3일 연속',desc:'3일 연속으로 공부하기',key:'streak',goal:3,gift:['hat','flower']},
  {id:'cards100',ico:'🧭',name:'단어 탐험가',desc:'카드 100장 공부하기',key:'cards',goal:100,gift:['hat','acorn']},
+ {id:'correct50',ico:'🐼',name:'정답 50개',desc:'정답 50개 맞히기',key:'correct',goal:50,gift:['animal','panda']},
  {id:'perfect1',ico:'💯',name:'백점 만점',desc:'만점 1번 받기',key:'perfect',goal:1,gift:['neck','medal']},
  {id:'days3',ico:'📅',name:'꾸준한 친구',desc:'3일 동안 공부하기',key:'days',goal:3,gift:['animal','raccoon']},
+ {id:'days5',ico:'🐨',name:'5일 친구',desc:'5일 동안 공부하기',key:'days',goal:5,gift:['animal','koala']},
  {id:'correct100',ico:'✅',name:'정답 척척',desc:'정답 100개 맞히기',key:'correct',goal:100,gift:['face','sun']},
  {id:'quiz10',ico:'🏹',name:'도전왕',desc:'문제 풀기 10판 끝내기',key:'quizzes',goal:10,gift:['bg','meadow']},
  {id:'stones3',ico:'🐾',name:'징검다리 건너기',desc:'레슨 3개에서 별 2개 이상',key:'stones',goal:3,gift:['hat','party']},
@@ -506,7 +513,8 @@ function giftAch(slot,id){return ACH.find(function(a){return a.gift[0]===slot&&a
 
 /* ================= 저장 ================= */
 var KEY='forestEnglish.v1', D;
-function freshProg(){return{animal:null,xp:{},equip:{hat:'none',face:'none',neck:'none',bg:'forest'},
+var EQ0={hat:'none',face:'none',neck:'none',bg:'forest'};
+function freshProg(){return{animal:null,xp:{},equips:{},
   own:{animal:['rabbit','bear','fox'],hat:['none'],face:['none'],neck:['none'],bg:['forest']},
   ach:{},stats:{cards:0,listens:0,quizzes:0,perfect:0,correct:0,sentCorrect:0},days:[],best:{},last:null,filter:'all',newItems:0}}
 function cloneLesson(l){return{id:l.id,no:l.no,title:l.title,items:l.items.map(function(it){var o=Object.assign({},it);o.id=nid('i');return o})}}
@@ -520,6 +528,7 @@ function load(){
   Object.keys(f).forEach(function(k){if(p[k]===undefined)p[k]=f[k]});
   Object.keys(f.stats).forEach(function(k){if(p.stats[k]===undefined)p.stats[k]=0});
   Object.keys(f.own).forEach(function(k){if(!Array.isArray(p.own[k]))p.own[k]=f.own[k]});
+  if(p.equip){var a0=p.animal||'rabbit';if(!p.equips[a0])p.equips[a0]=p.equip;delete p.equip}
   D.lessons.forEach(function(l){l.items=l.items||[];l.items.forEach(function(it){if(!it.id)it.id=nid('i');if(!it.kind)it.kind=kindOf(it.en)})});
 }
 function migrateOld(){
@@ -572,6 +581,7 @@ function tts(text,rate){
   if(!('speechSynthesis' in window)||!text)return;
   try{player.pause()}catch(e){}
   if(!voiceList.length)loadVoices();
+  if(/^\s*I\s*[.!?]?\s*$/.test(text))text='eye';
   speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);
   u.lang=voice?voice.lang:'en-US';if(voice)u.voice=voice;u.rate=rate||0.9;u.pitch=1.05;speechSynthesis.speak(u);
 }
@@ -661,6 +671,8 @@ function animalSVG(type,stage,eq,o){
   if(type==='rabbit')g+='<circle cx="'+(cx+rx-6)+'" cy="'+(cy+ry*.35)+'" r="'+(9+st)+'" fill="#fff" '+sw+'/>';
   if(type==='bear')g+='<circle cx="'+(cx+rx-4)+'" cy="'+(cy+ry*.4)+'" r="8" fill="'+c.body+'" '+sw+'/>';
   if(type==='deer')g+=E(cx+rx-3,cy,7,11,c.belly,sw+' transform="rotate(30 '+(cx+rx-3)+' '+cy+')"');
+  if(type==='panda')g+='<circle cx="'+(cx+rx-5)+'" cy="'+(cy+ry*.4)+'" r="8" fill="'+c.limb+'" '+sw+'/>';
+  if(type==='puppy')g+='<path d="M'+(cx+rx-8)+' '+(cy+4)+'Q'+(cx+rx+16)+' '+(cy-6)+' '+(cx+rx+12)+' '+(cy-26)+'" fill="none" stroke="'+S+'" stroke-width="12" stroke-linecap="round"/><path d="M'+(cx+rx-8)+' '+(cy+4)+'Q'+(cx+rx+16)+' '+(cy-6)+' '+(cx+rx+12)+' '+(cy-26)+'" fill="none" stroke="'+c.body+'" stroke-width="6" stroke-linecap="round"/>';
   if(type==='fox'||type==='raccoon'){var tx=cx+rx+2,ty=cy+2,trx=12+st*1.8,tr=24+st*3.4;
     g+='<defs><clipPath id="t'+k+'"><ellipse cx="'+tx+'" cy="'+ty+'" rx="'+trx+'" ry="'+tr+'" transform="rotate(32 '+tx+' '+ty+')"/></clipPath></defs>';
     g+='<g transform="rotate(32 '+tx+' '+ty+')">'+E(tx,ty,trx,tr,c.body,sw)+'</g>';
@@ -669,11 +681,12 @@ function animalSVG(type,stage,eq,o){
     g+='<g transform="rotate(32 '+tx+' '+ty+')">'+E(tx,ty,trx,tr,'none',sw)+'</g>';
   }
   // 몸
-  g+=E(cx-17,204,14,7,type==='owl'?'#F4A62A':c.body,sw)+E(cx+17,204,14,7,type==='owl'?'#F4A62A':c.body,sw);
+  var LB=c.limb||c.body;
+  g+=E(cx-17,204,14,7,type==='owl'?'#F4A62A':LB,sw)+E(cx+17,204,14,7,type==='owl'?'#F4A62A':LB,sw);
   g+=E(cx,cy,rx,ry,c.body,sw)+E(cx,cy+5,rx*.62,ry*.68,c.belly);
   if(type==='deer')g+='<circle cx="'+(cx-rx*.62)+'" cy="'+(cy-ry*.15)+'" r="4" fill="'+c.belly+'"/><circle cx="'+(cx+rx*.64)+'" cy="'+(cy+ry*.1)+'" r="3.4" fill="'+c.belly+'"/><circle cx="'+(cx-rx*.55)+'" cy="'+(cy+ry*.3)+'" r="2.8" fill="'+c.belly+'"/>';
   if(type==='owl')[-1,1].forEach(function(s){g+=E(cx+s*(rx-5),cy+2,14,ry*.72,c.inner,sw+' transform="rotate('+(s*-12)+' '+(cx+s*(rx-5))+' '+(cy+2)+')"')});
-  else [-1,1].forEach(function(s){var ax=cx+s*(rx-7),ay=cy-ry*.22;g+=E(ax,ay,9,15,c.body,sw+' transform="rotate('+(s*-28)+' '+ax+' '+ay+')"')});
+  else [-1,1].forEach(function(s){var ax=cx+s*(rx-7),ay=cy-ry*.22;g+=E(ax,ay,9,15,LB,sw+' transform="rotate('+(s*-28)+' '+ax+' '+ay+')"')});
   // 귀
   [-1,1].forEach(function(s){
     if(type==='rabbit'){var ery=28+st*2.4,ex=hx+s*20,ey=hy-hr-8-st*1.5;g+='<g transform="rotate('+(s*12)+' '+ex+' '+(ey+ery*.8)+')">'+E(ex,ey,13,ery,c.body,sw)+E(ex,ey+3,6,ery-9,c.inner)+'</g>'}
@@ -683,6 +696,8 @@ function animalSVG(type,stage,eq,o){
     if(type==='deer'){
       if(st>=3){var bx=hx+s*16,by=hy-hr+10,len=24+(st-3)*9;g+='<path d="M'+bx+' '+by+'L'+(bx+s*8)+' '+(by-len)+'M'+(bx+s*4)+' '+(by-len*.5)+'L'+(bx+s*20)+' '+(by-len*.7)+(st>=4?'M'+(bx+s*7)+' '+(by-len*.85)+'L'+(bx-s*3)+' '+(by-len*1.05):'')+'" stroke="#8D5A2B" stroke-width="6" stroke-linecap="round" fill="none"/>'}
       var dx=hx+s*(hr+2),dy=hy-12;g+=E(dx,dy,21,10,c.body,sw+' transform="rotate('+(s*-25)+' '+dx+' '+dy+')"')+E(dx,dy,12,5,c.inner,'transform="rotate('+(s*-25)+' '+dx+' '+dy+')"')}
+    if(type==='koala'){var kx=hx+s*hr*.84,ky=hy-hr*.42;g+='<circle cx="'+kx+'" cy="'+ky+'" r="24" fill="'+c.body+'" '+sw+'/><circle cx="'+(kx+s*2)+'" cy="'+(ky+2)+'" r="14" fill="'+c.inner+'"/>'}
+    if(type==='panda'){g+='<circle cx="'+(hx+s*hr*.72)+'" cy="'+(hy-hr*.72)+'" r="16" fill="'+c.limb+'" '+sw+'/>'}
     if(type==='owl'){var tl=14+st*2;g+='<path d="M'+(hx+s*24)+' '+(hy-hr+6)+'L'+(hx+s*44)+' '+(hy-hr-tl)+'L'+(hx+s*48)+' '+(hy-hr+20)+'Z" fill="'+c.body+'" '+sw+'/>'}
   });
   // 머리
@@ -691,17 +706,25 @@ function animalSVG(type,stage,eq,o){
   if(type==='fox')[-1,1].forEach(function(s){g+=E(hx+s*20,hy+18,22,15,c.belly)});
   if(type==='raccoon'){[-1,1].forEach(function(s){g+=E(hx+s*18,hy-1,17,12,c.mask,'transform="rotate('+(s*-14)+' '+(hx+s*18)+' '+(hy-1)+')"')});g+=E(hx,hy+17,18,13,c.belly)}
   if(type==='owl')[-1,1].forEach(function(s){g+='<circle cx="'+(hx+s*18)+'" cy="'+(hy-2)+'" r="19" fill="'+c.belly+'"/>'});
+  if(type==='panda')[-1,1].forEach(function(s){g+=E(hx+s*19,hy+1,12,15,c.limb,'transform="rotate('+(s*-30)+' '+(hx+s*19)+' '+(hy+1)+')"')});
+  if(type==='puppy'){g+=E(hx,hy+17,20,14,c.belly);[-1,1].forEach(function(s){var px=hx+s*(hr-4),py=hy-4;g+=E(px,py,14,28,c.inner,sw+' transform="rotate('+(s*-18)+' '+px+' '+py+')"')})}
+  if(type==='koala')g+=E(hx,hy+20,16,10,c.belly);
   // 얼굴
   var er=type==='owl'?8.5:(st===1?7.6:6.6),ey=hy-2;
   [-1,1].forEach(function(s){var x=hx+s*18;
+    if(type==='panda')g+='<circle cx="'+x+'" cy="'+ey+'" r="'+(er+2.2)+'" fill="#fff"/>';
     g+='<circle cx="'+x+'" cy="'+ey+'" r="'+er+'" fill="#2B1E16"/><circle cx="'+(x-2.2)+'" cy="'+(ey-2.5)+'" r="'+(er*.36)+'" fill="#fff"/><circle cx="'+(x+2)+'" cy="'+(ey+2)+'" r="1.1" fill="#fff"/>';
     g+=E(hx+s*33,hy+14,8,5,'#FF8FA3','opacity=".55"');
   });
   if(type==='owl')g+='<path d="M'+(hx-7)+' '+(hy+7)+'L'+(hx+7)+' '+(hy+7)+'L'+hx+' '+(hy+19)+'Z" fill="'+c.nose+'" stroke="#C47A12" stroke-width="2.5" stroke-linejoin="round"/>';
   else{
-    g+=type==='rabbit'?E(hx,hy+10,5,3.6,c.nose):E(hx,hy+(type==='bear'?11:12),type==='bear'?7.5:6,type==='bear'?5.2:4.4,c.nose);
-    if(o.open)g+='<ellipse cx="'+hx+'" cy="'+(hy+23)+'" rx="6.5" ry="5.5" fill="#8A3B3B"/><ellipse cx="'+hx+'" cy="'+(hy+25.5)+'" rx="4" ry="2.5" fill="#F28AA6"/>';
-    else g+='<path d="M'+(hx-8)+' '+(hy+19)+'Q'+(hx-4)+' '+(hy+25)+' '+hx+' '+(hy+19)+'Q'+(hx+4)+' '+(hy+25)+' '+(hx+8)+' '+(hy+19)+'" fill="none" stroke="'+S+'" stroke-width="2.6" stroke-linecap="round"/>';
+    var mY=19;
+    if(type==='koala'){g+=E(hx,hy+11,10,13,c.nose)+E(hx-3,hy+6,3,4,'#fff','opacity=".35"');mY=28}
+    else if(type==='puppy'){g+=E(hx,hy+11,8,6,c.nose)+E(hx-2,hy+9,2.5,1.6,'#fff','opacity=".5"')}
+    else g+=type==='rabbit'?E(hx,hy+10,5,3.6,c.nose):E(hx,hy+(type==='bear'?11:12),type==='bear'||type==='panda'?7.5:6,type==='bear'||type==='panda'?5.2:4.4,c.nose);
+    if(o.open)g+='<ellipse cx="'+hx+'" cy="'+(hy+mY+4)+'" rx="6.5" ry="5.5" fill="#8A3B3B"/><ellipse cx="'+hx+'" cy="'+(hy+mY+6.5)+'" rx="4" ry="2.5" fill="#F28AA6"/>';
+    else g+='<path d="M'+(hx-8)+' '+(hy+mY)+'Q'+(hx-4)+' '+(hy+mY+6)+' '+hx+' '+(hy+mY)+'Q'+(hx+4)+' '+(hy+mY+6)+' '+(hx+8)+' '+(hy+mY)+'" fill="none" stroke="'+S+'" stroke-width="2.6" stroke-linecap="round"/>';
+    if(type==='puppy'&&!o.open)g+='<path d="M'+(hx-3)+' '+(hy+mY+3)+'q3 9 6 0" fill="#F28AA6" stroke="#C85A78" stroke-width="1.5"/>';
   }
   // 꾸미기
   g+=accNeck(eq.neck,hx,hy+hr-6,hr)+accFace(eq.face,hx,ey)+accHat(eq.hat,hx,hy-hr+4,hr);
@@ -715,7 +738,7 @@ function animalSVG(type,stage,eq,o){
 function xpOf(an){return D.prog.xp[an]||0}
 function stageOf(an){var x=xpOf(an),s=1;for(var i=0;i<LV.length;i++)if(x>=LV[i])s=i+1;return s}
 function stageName(an){return STAGES[stageOf(an)-1]+' '+AN[an].name}
-function curEq(){return D.prog.equip}
+function curEq(an){an=an||D.prog.animal||'rabbit';var e=D.prog.equips;if(!e[an])e[an]=Object.assign({},EQ0);return e[an]}
 function petSVG(o){return animalSVG(D.prog.animal||'rabbit',stageOf(D.prog.animal||'rabbit'),curEq(),o)}
 var queue=[];
 function addXp(n){
@@ -746,26 +769,27 @@ function checkAch(){
       queue.push({t:'ach',a:a});
     }
   });
-  if(!document.querySelector('#cele:not(.hidden)')&&!$('s-quiz').classList.contains('on'))setTimeout(nextCele,250);
+  if(!document.querySelector('#cele:not(.hidden)')&&!inLearning())setTimeout(nextCele,250);
 }
 
 /* ================= 축하 창 ================= */
 function confetti(){var el=$('leaves'),h='',e=['🍃','🌼','✨','🍂','🌟','🌸'];for(var i=0;i<18;i++)h+='<span style="left:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*1.2).toFixed(2)+'s">'+pick(e)+'</span>';el.innerHTML=h}
 var celeCur=null;
+function inLearning(){return $('s-study').classList.contains('on')||$('s-quiz').classList.contains('on')}
 function nextCele(){
-  if(!$('cele').classList.contains('hidden'))return;
+  if(!$('cele').classList.contains('hidden')||inLearning())return;
   var c=queue.shift();if(!c){refreshHomeBits();return}
   celeCur=c;confetti();
   if(c.t==='lv'){
     $('ceTitle').textContent='🌱 쑥쑥 자랐어요!';
-    $('ceArt').innerHTML=animalSVG(c.an,c.to,curEq(),{bg:true,open:true});
+    $('ceArt').innerHTML=animalSVG(c.an,c.to,curEq(c.an),{bg:true,open:true});
     $('ceMsg').innerHTML=esc(STAGES[c.from-1]+' '+AN[c.an].name)+' → <b>'+esc(STAGES[c.to-1]+' '+AN[c.an].name)+'</b>';
     $('ceWear').classList.add('hidden');tts('Yay! I grew up! Thank you!');
   }else{
     var a=c.a,sl=a.gift[0],id=a.gift[1];
     $('ceTitle').textContent='🏅 도장을 받았어요!';
-    var eq=Object.assign({},curEq()),an=D.prog.animal||'rabbit';
-    if(sl==='animal')an=id;else eq[sl]=id;
+    var an=sl==='animal'?id:(D.prog.animal||'rabbit'),eq=Object.assign({},curEq(an));
+    if(sl!=='animal')eq[sl]=id;
     $('ceArt').innerHTML=animalSVG(an,stageOf(an),eq,{bg:true,open:true});
     $('ceMsg').innerHTML='<b>'+a.ico+' '+esc(a.name)+'</b><br>🎁 선물: '+esc(itemName(sl,id))+(sl==='animal'?' 친구':'');
     $('ceWear').textContent=sl==='animal'?'이 친구와 공부할래요':'지금 입어 볼래요';
@@ -775,7 +799,7 @@ function nextCele(){
 }
 $('ceOk').onclick=function(){$('cele').classList.add('hidden');setTimeout(nextCele,200)};
 $('ceWear').onclick=function(){
-  if(celeCur&&celeCur.t==='ach'){var sl=celeCur.a.gift[0],id=celeCur.a.gift[1];if(sl==='animal')D.prog.animal=id;else D.prog.equip[sl]=id;save()}
+  if(celeCur&&celeCur.t==='ach'){var sl=celeCur.a.gift[0],id=celeCur.a.gift[1];if(sl==='animal')D.prog.animal=id;else curEq()[sl]=id;save()}
   $('ceOk').click();
 };
 
@@ -791,6 +815,7 @@ function go(n){
   else if(n==='lesson'){show('lesson');renderLesson()}
   else if(n==='closet'){show('closet');D.prog.newItems=0;save();renderCloset()}
   else if(n==='badges'){show('badges');renderBadges()}
+  if(queue.length)setTimeout(nextCele,350);
 }
 document.addEventListener('click',function(e){
   var b=e.target.closest('[data-say]');
@@ -1084,7 +1109,6 @@ function showResult(){
   $('rBox').innerHTML=h;
   $('rBox').onclick=function(e){var b=e.target.closest('button');if(!b||b.dataset.say)return;
     if(b.id==='rWrong')startQuiz(Q.mode,Q.pool,Q.wrong.slice());if(b.id==='rAgain')startQuiz(Q.mode,Q.pool);if(b.id==='rBack')go('lesson')};
-  setTimeout(function(){tts(m[0])},300);
   checkAch();setTimeout(nextCele,900);
 }
 
@@ -1098,7 +1122,7 @@ function renderCloset(){
   $('cTabs').innerHTML=SLOTS.map(function(s){return '<button class="chip" data-tab="'+s[0]+'" aria-pressed="'+(cTab===s[0])+'">'+s[1]+'</button>'}).join('');
   $('cGrid').innerHTML=ITEMS[cTab].map(function(it){
     var id=it[0],own=D.prog.own[cTab].indexOf(id)>-1,sel=cTab==='animal'?an===id:eq[cTab]===id,art,sub='';
-    if(cTab==='animal'){art=animalSVG(id,stageOf(id),eq,{bg:false});sub=own?'Lv.'+stageOf(id)+' '+STAGES[stageOf(id)-1]:''}
+    if(cTab==='animal'){art=animalSVG(id,stageOf(id),curEq(id),{bg:false});sub=own?'Lv.'+stageOf(id)+' '+STAGES[stageOf(id)-1]:''}
     else{var e2=Object.assign({},eq);e2[cTab]=id;art=animalSVG(an,stageOf(an),e2,{bg:cTab==='bg'})}
     if(!own){var a=giftAch(cTab,id);sub='\'' +(a?a.name:'')+'\' 도장'}
     return '<button class="item'+(own?'':' locked')+'" data-id="'+id+'" aria-pressed="'+sel+'"'+(own?'':' aria-disabled="true"')+'>'+art+(own?'':'<span class="lock">🔒</span>')+'<span>'+esc(it[1])+'</span><small>'+esc(sub)+'</small></button>';
@@ -1108,7 +1132,7 @@ $('cTabs').onclick=function(e){var b=e.target.closest('[data-tab]');if(!b)return
 $('cGrid').onclick=function(e){
   var b=e.target.closest('.item');if(!b)return;var id=b.dataset.id;
   if(D.prog.own[cTab].indexOf(id)<0){var a=giftAch(cTab,id);toast('🔒 '+(a?'\''+a.name+'\' 도장('+a.desc+')을 받으면 열려요':'아직 잠겨 있어요'));return}
-  if(cTab==='animal')D.prog.animal=id;else D.prog.equip[cTab]=id;save();renderCloset();
+  if(cTab==='animal')D.prog.animal=id;else curEq()[cTab]=id;save();renderCloset();
   tts(pick(['Wow, I love it!','Looks great!','So cute!','Thank you!']));
 };
 
